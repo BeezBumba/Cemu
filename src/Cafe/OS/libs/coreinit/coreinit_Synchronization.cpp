@@ -230,6 +230,11 @@ namespace coreinit
 
 	void OSLockMutexInternal(OSMutex* mutex)
 	{
+		if (mutex == nullptr)
+		{
+			cemuLog_log(LogType::APIErrors, "OSLockMutex called with nullptr mutex");
+			return;
+		}
 		OSThread_t* currentThread = OSGetCurrentThread();
 		int_fast32_t failedAttempts = 0;
 		while (true)
@@ -274,6 +279,12 @@ namespace coreinit
 		OSThread_t* currentThread = OSGetCurrentThread();
 		__OSLockScheduler();
 		OSTestThreadCancelInternal();
+		if (mutex == nullptr)
+		{
+			cemuLog_log(LogType::APIErrors, "OSTryLockMutex called with nullptr mutex");
+			__OSUnlockScheduler();
+			return false;
+		}
 		if (mutex->owner == nullptr)
 		{
 			// acquire lock
@@ -299,6 +310,11 @@ namespace coreinit
 
 	void OSUnlockMutexInternal(OSMutex* mutex)
 	{
+		if (mutex == nullptr)
+		{
+			cemuLog_log(LogType::APIErrors, "OSUnlockMutex called with nullptr mutex");
+			return;
+		}
 		OSThread_t* currentThread = OSGetCurrentThread();
 		if (mutex->lockCount == 0)
 		{
