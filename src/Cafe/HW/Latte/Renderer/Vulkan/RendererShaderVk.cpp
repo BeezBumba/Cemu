@@ -437,6 +437,10 @@ void RendererShaderVk::ShaderCacheLoading_begin(uint64 cacheTitleId)
 		s_spirvCache = nullptr;
 	}
 	uint32 spirvCacheMagic = GeneratePrecompiledCacheId();
+	// Mix in device float-control capabilities so that SPIR-V compiled with e.g. RTE64
+	// on one device is not incorrectly reused on a device that lacks those capabilities.
+	spirvCacheMagic ^= (VulkanRenderer::GetInstance()->HasSPRIVRoundingModeRTE32() ? 0x47b3c1a2u : 0u);
+	spirvCacheMagic ^= (VulkanRenderer::GetInstance()->HasSPRIVRoundingModeRTE64() ? 0x3d4e5f6au : 0u);
 	const std::string cacheFilename = fmt::format("{:016x}_spirv.bin", cacheTitleId);
 	const fs::path cachePath = ActiveSettings::GetCachePath("shaderCache/precompiled/{}", cacheFilename);
 	s_spirvCache = FileCache::Open(cachePath, true, spirvCacheMagic);

@@ -395,15 +395,17 @@ namespace LatteDecompiler
 			src->addFmt(" vec4 passParameterSem{};" _CRLF, psInputTable->import[psInputIndex].semanticId);
 		}
 
-		// TODO: fix this
-		for (uint32 i = 0; i < 32; i++)
+		// Only emit dummy outputs for locations actually consumed by the PS input table.
+		// Emitting all 32 locations (128 components) can exceed maxVertexOutputComponents (128)
+		// on drivers that also count built-in outputs (e.g. gl_Position) against the limit.
+		for (uint32 i = 0; i < (uint32)psInputTable->count; i++)
 		{
 			if (!activePassParams[i])
 				src->addFmt("layout(location = {0}) out vec4 dummyPassParameterSem{0};" _CRLF, i);
 		}
 
 		src->add("void dummyPassParamInit() {" _CRLF);
-		for (uint32 i = 0; i < 32; i++)
+		for (uint32 i = 0; i < (uint32)psInputTable->count; i++)
 		{
 			if (!activePassParams[i])
 				src->addFmt("dummyPassParameterSem{} = vec4(0.0, 0.0, 0.0, 0.0);" _CRLF, i);
