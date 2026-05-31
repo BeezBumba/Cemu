@@ -284,12 +284,15 @@ namespace LatteDecompiler
 		{
 			src->add("#define GET_FRAGCOORD() vec4(gl_FragCoord.xy*uf_fragCoordScale.xy,gl_FragCoord.z, 1.0/gl_FragCoord.w)" _CRLF);
 		}
-		if (decompilerContext->options->spirvInstrinsics.hasRoundingModeRTEFloat32 || decompilerContext->options->spirvInstrinsics.hasRoundingModeRTEFloat64)
+		const auto& spirvInstrinsics = decompilerContext->options->spirvInstrinsics;
+		const bool canEmitRoundingModeRTEFloat32 = spirvInstrinsics.hasRoundingModeRTEFloat32;
+		const bool canEmitRoundingModeRTEFloat64 = spirvInstrinsics.hasRoundingModeRTEFloat64;
+		if (canEmitRoundingModeRTEFloat32 || canEmitRoundingModeRTEFloat64)
 		{
 			src->add("#extension GL_EXT_spirv_intrinsics: enable" _CRLF);
-			if (decompilerContext->options->spirvInstrinsics.hasRoundingModeRTEFloat32)
+			if (canEmitRoundingModeRTEFloat32)
 				src->add("spirv_execution_mode(capabilities = [4467], extensions = [\"SPV_KHR_float_controls\"], 4462, 32);" _CRLF);
-			if (decompilerContext->options->spirvInstrinsics.hasRoundingModeRTEFloat64)
+			if (canEmitRoundingModeRTEFloat64)
 				src->add("spirv_execution_mode(capabilities = [4467], extensions = [\"SPV_KHR_float_controls\"], 4462, 64);" _CRLF);
 		}
 		src->add("#else" _CRLF);
