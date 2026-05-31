@@ -362,6 +362,11 @@ namespace coreinit
 
 	void OSSignalCond(OSCond* cond)
 	{
+		if (cond == nullptr)
+		{
+			cemuLog_log(LogType::APIErrors, "OSSignalCond called with nullptr cond");
+			return;
+		}
 		OSWakeupThread(&cond->threadQueue);
 	}
 
@@ -370,7 +375,25 @@ namespace coreinit
 		// seen in Bayonetta 2
 		// releases the mutex while waiting for the condition to be signaled
 		__OSLockScheduler();
+		if (cond == nullptr)
+		{
+			cemuLog_log(LogType::APIErrors, "OSWaitCond called with nullptr cond");
+			__OSUnlockScheduler();
+			return;
+		}
+		if (mutex == nullptr)
+		{
+			cemuLog_log(LogType::APIErrors, "OSWaitCond called with nullptr mutex");
+			__OSUnlockScheduler();
+			return;
+		}
 		OSThread_t* currentThread = OSGetCurrentThread();
+		if (mutex->owner != currentThread || mutex->lockCount == 0)
+		{
+			cemuLog_log(LogType::APIErrors, "OSWaitCond called with unowned mutex");
+			__OSUnlockScheduler();
+			return;
+		}
 		cemu_assert_debug(mutex->owner == currentThread);
 		sint32 prevLockCount = mutex->lockCount;
 		// unlock mutex
