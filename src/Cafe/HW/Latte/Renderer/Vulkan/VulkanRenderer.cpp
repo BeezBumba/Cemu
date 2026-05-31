@@ -309,6 +309,7 @@ void VulkanRenderer::GetDeviceFeatures()
 	m_featureControl.deviceExtensions.pipeline_creation_cache_control = pcc.pipelineCreationCacheControl;
 	m_featureControl.deviceExtensions.custom_border_color_without_format = m_featureControl.deviceExtensions.custom_border_color && bcf.customBorderColorWithoutFormat;
 	m_featureControl.shaderFloatControls.shaderRoundingModeRTEFloat32 = m_featureControl.deviceExtensions.shader_float_controls && pfcp.shaderRoundingModeRTEFloat32;
+	m_featureControl.shaderFloatControls.shaderRoundingModeRTEFloat64 = m_featureControl.deviceExtensions.shader_float_controls && pfcp.shaderRoundingModeRTEFloat64;
 	if(!m_featureControl.shaderFloatControls.shaderRoundingModeRTEFloat32)
 		cemuLog_log(LogType::Force, "Shader round mode control not available on this device or driver. Some rendering issues might occur.");
 

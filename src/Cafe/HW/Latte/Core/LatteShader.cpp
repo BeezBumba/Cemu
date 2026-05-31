@@ -765,10 +765,12 @@ void LatteShader_GetDecompilerOptions(LatteDecompilerOptions& options, LatteCons
 {
 	options.usesGeometryShader = geometryShaderEnabled;
 	options.spirvInstrinsics.hasRoundingModeRTEFloat32 = false;
+	options.spirvInstrinsics.hasRoundingModeRTEFloat64 = false;
 	options.useTFViaSSBO = g_renderer->UseTFViaSSBO();
 	if (g_renderer->GetType() == RendererAPI::Vulkan)
 	{
 		options.spirvInstrinsics.hasRoundingModeRTEFloat32 = VulkanRenderer::GetInstance()->HasSPRIVRoundingModeRTE32();
+		options.spirvInstrinsics.hasRoundingModeRTEFloat64 = VulkanRenderer::GetInstance()->HasSPRIVRoundingModeRTE64();
 	}
 	options.strictMul = g_current_game_profile->GetAccurateShaderMul() != AccurateShaderMulOption::False;
 }

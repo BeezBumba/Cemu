@@ -483,6 +483,7 @@ private:
 		struct
 		{
 			bool shaderRoundingModeRTEFloat32{ false };
+			bool shaderRoundingModeRTEFloat64{ false };
 		}shaderFloatControls; // from VK_KHR_shader_float_controls
 
 		struct
@@ -959,6 +960,7 @@ private:
 public:
 	bool GetDisableMultithreadedCompilation() const { return m_featureControl.disableMultithreadedCompilation; }
 	bool HasSPRIVRoundingModeRTE32() const { return m_featureControl.shaderFloatControls.shaderRoundingModeRTEFloat32; }
+	bool HasSPRIVRoundingModeRTE64() const { return m_featureControl.shaderFloatControls.shaderRoundingModeRTEFloat64; }
 	bool IsDebugMarkersEnabled() const { return m_featureControl.usingDebugMarkerTool; }
 	bool IsTracingToolEnabled() const { return m_featureControl.usingTracingTool; }
 
