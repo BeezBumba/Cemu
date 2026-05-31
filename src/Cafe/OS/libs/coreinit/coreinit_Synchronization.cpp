@@ -394,7 +394,6 @@ namespace coreinit
 			__OSUnlockScheduler();
 			return;
 		}
-		cemu_assert_debug(mutex->owner == currentThread);
 		sint32 prevLockCount = mutex->lockCount;
 		// unlock mutex
 		mutex->lockCount = 0;
