@@ -478,6 +478,7 @@ private:
 			bool occlusion_query_precise;
 			bool depth_clamp;
 			bool vertex_pipeline_stores_and_atomics;
+			bool shader_float64;
 		} deviceFeatures;
 
 		struct
