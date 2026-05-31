@@ -288,6 +288,7 @@ void VulkanRenderer::GetDeviceFeatures()
 	m_featureControl.deviceFeatures.occlusion_query_precise = physicalDeviceFeatures2.features.occlusionQueryPrecise;
 	m_featureControl.deviceFeatures.depth_clamp = physicalDeviceFeatures2.features.depthClamp;
 	m_featureControl.deviceFeatures.vertex_pipeline_stores_and_atomics = physicalDeviceFeatures2.features.vertexPipelineStoresAndAtomics;
+	m_featureControl.deviceFeatures.shader_float64 = physicalDeviceFeatures2.features.shaderFloat64;
 	/* Get Vulkan device properties and limits */
 	VkPhysicalDeviceFloatControlsPropertiesKHR pfcp{};
 	prevStruct = nullptr;
@@ -309,6 +310,7 @@ void VulkanRenderer::GetDeviceFeatures()
 	m_featureControl.deviceExtensions.pipeline_creation_cache_control = pcc.pipelineCreationCacheControl;
 	m_featureControl.deviceExtensions.custom_border_color_without_format = m_featureControl.deviceExtensions.custom_border_color && bcf.customBorderColorWithoutFormat;
 	m_featureControl.shaderFloatControls.shaderRoundingModeRTEFloat32 = m_featureControl.deviceExtensions.shader_float_controls && pfcp.shaderRoundingModeRTEFloat32;
+	m_featureControl.shaderFloatControls.shaderRoundingModeRTEFloat64 = m_featureControl.deviceExtensions.shader_float_controls && m_featureControl.deviceFeatures.shader_float64 && pfcp.shaderRoundingModeRTEFloat64;
 	if(!m_featureControl.shaderFloatControls.shaderRoundingModeRTEFloat32)
 		cemuLog_log(LogType::Force, "Shader round mode control not available on this device or driver. Some rendering issues might occur.");
 
@@ -635,6 +637,7 @@ VulkanRenderer::VulkanRenderer()
 	deviceFeatures.occlusionQueryPrecise = m_featureControl.deviceFeatures.occlusion_query_precise;
 	deviceFeatures.depthClamp = m_featureControl.deviceFeatures.depth_clamp;
 	deviceFeatures.depthBiasClamp = VK_TRUE;
+	deviceFeatures.shaderFloat64 = m_featureControl.deviceFeatures.shader_float64;
 
 	if (m_featureControl.deviceExtensions.pipeline_robustness)
 	{

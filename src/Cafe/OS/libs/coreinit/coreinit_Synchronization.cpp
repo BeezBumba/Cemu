@@ -230,6 +230,11 @@ namespace coreinit
 
 	void OSLockMutexInternal(OSMutex* mutex)
 	{
+		if (mutex == nullptr)
+		{
+			cemuLog_log(LogType::APIErrors, "OSLockMutex called with nullptr mutex");
+			return;
+		}
 		OSThread_t* currentThread = OSGetCurrentThread();
 		int_fast32_t failedAttempts = 0;
 		while (true)
@@ -274,6 +279,12 @@ namespace coreinit
 		OSThread_t* currentThread = OSGetCurrentThread();
 		__OSLockScheduler();
 		OSTestThreadCancelInternal();
+		if (mutex == nullptr)
+		{
+			cemuLog_log(LogType::APIErrors, "OSTryLockMutex called with nullptr mutex");
+			__OSUnlockScheduler();
+			return false;
+		}
 		if (mutex->owner == nullptr)
 		{
 			// acquire lock
@@ -299,6 +310,11 @@ namespace coreinit
 
 	void OSUnlockMutexInternal(OSMutex* mutex)
 	{
+		if (mutex == nullptr)
+		{
+			cemuLog_log(LogType::APIErrors, "OSUnlockMutex called with nullptr mutex");
+			return;
+		}
 		OSThread_t* currentThread = OSGetCurrentThread();
 		if (mutex->lockCount == 0)
 		{
@@ -346,6 +362,11 @@ namespace coreinit
 
 	void OSSignalCond(OSCond* cond)
 	{
+		if (cond == nullptr)
+		{
+			cemuLog_log(LogType::APIErrors, "OSSignalCond called with nullptr cond");
+			return;
+		}
 		OSWakeupThread(&cond->threadQueue);
 	}
 
@@ -354,8 +375,25 @@ namespace coreinit
 		// seen in Bayonetta 2
 		// releases the mutex while waiting for the condition to be signaled
 		__OSLockScheduler();
+		if (cond == nullptr)
+		{
+			cemuLog_log(LogType::APIErrors, "OSWaitCond called with nullptr cond");
+			__OSUnlockScheduler();
+			return;
+		}
+		if (mutex == nullptr)
+		{
+			cemuLog_log(LogType::APIErrors, "OSWaitCond called with nullptr mutex");
+			__OSUnlockScheduler();
+			return;
+		}
 		OSThread_t* currentThread = OSGetCurrentThread();
-		cemu_assert_debug(mutex->owner == currentThread);
+		if (mutex->owner != currentThread || mutex->lockCount == 0)
+		{
+			cemuLog_log(LogType::APIErrors, "OSWaitCond called with unowned mutex");
+			__OSUnlockScheduler();
+			return;
+		}
 		sint32 prevLockCount = mutex->lockCount;
 		// unlock mutex
 		mutex->lockCount = 0;
